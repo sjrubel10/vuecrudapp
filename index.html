@@ -1,0 +1,176 @@
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="style.css"></link>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.2/css/all.min.css"></link>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css"/>
+        
+        <title>CRUD Application Using Vue</title>
+    </head>
+    <body>
+        <div id="app" class="app">
+            <p ><a href="www.facebook.com">Facebook</a></p>
+            <div class="container-fluid">
+                <div class="row bg-dark">
+                    <div class="col-lg-12">
+                        <p class="text-center text-light pt-2 title-font-size">CRUD Application using js php and mysqli</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="container">
+                <div class="row mt-3">
+                    <div class="col-lg-6">
+                       <h3 class="text-info">Registered User</h3>
+                    </div>
+                    <div class="col-lg-6">
+                      <button class="btn btn-info float-right" @click="showAddModel=true">
+                        <i class="fas fa-user"></i>&nbsp;&bscr; Add new user
+                      </button>
+                    </div>
+                </div>
+                <hr class="bg-info">
+                <div class="alert alert-danger" v-if="errorMsg">
+                    {{ errorMsg }}
+                </div>
+                <div class="alert alert-success" v-if="successMsg">
+                    {{ successMsg }}  
+                </div>
+<!-- Displaying Recordes -->
+                <div class="row">
+                    <!-- <p>{{users}}</p> -->
+                    <div class="col-lg-12">
+                        <table class="table table-bordered table-striped">
+                            <p class="text-center" v-if="isDataLoaded">Loading...</p>
+                            <thead>
+                                <tr class="text-center bg-info text-light">
+                                    <th>ID</th>
+                                    <th>Photo</th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Phone</th>
+                                    <th>Edit</th>
+                                    <th>Delete</th>
+                                </tr>
+                            </thead>
+                            <tbody v-if="isDataLoad">
+                                <tr class="text-center" v-for="(user,key) in users" :key="key" :id="user.id">
+                                    
+                                    <td >{{user.id}}</td>
+                                    <td >
+                                        <img v-if="" class="imgProfile" :src="user.profileimg"/>
+                                        <!-- <img class="imgProfile" src="upload/1661253533.jpg" alt="Img"> -->
+                                    </td>
+                                    <td >{{user.name}}</td>
+                                    <td >{{user.email}}</td>
+                                    <td >{{user.phone}}</td>
+                                    <td ><a href="#" class="text-success" @click="showEditModel=true; selectUser(user);"><i class="fas fa-edit"></i></a></td>
+                                    <td ><a href="#" class="text-danger" :id="user.id" @click="showDeleteModel=true; selectUser(user)"><i class="fas fa-trash-alt"></i></a></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="form-group" v-if="showLoadMoreBtn">
+                            <button class="btn bg-primary text-white" @click="getData();">Load More Data</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Add New User Model -->
+                <div id="overlay" v-if="showAddModel">
+                    <div class="modal-dialog"> 
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Add New User</h5>
+                                <button type="button" class="close" @click="showAddModel=false">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="model-body p-4">
+                                <form action="#" method="post">
+                                    <div class="form-group">
+                                        <input type="text" name="name" class="form-control form-control-lg" placeholder="name" v-model="newUser.name">
+                                    </div>
+                                    <div class="form-group">
+                                        <input type="email" name="email" class="form-control form-control-lg" placeholder="email" v-model="newUser.email">
+                                    </div>
+                                    <div class="form-group">
+                                        <input type="tel" name="phone" class="form-control form-control-lg" placeholder="phone number" v-model="newUser.phone">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <input type="file" name="uploadimage" ref="file" v-on:change="onChange">
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <button class="btn btn-info btn-block btn-lg" @click="showAddModel=false; addUser();">Add User</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        
+            <!-- Edit User Model -->
+            
+            <div id="overlay" v-if="showEditModel">
+                <div class="modal-dialog"> 
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Edit User</h5>
+                            <button type="button" class="close" @click="showEditModel=false">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="model-body p-4">
+                            <form action="#" method="post">
+                                <div class="form-group">
+                                    <input type="text" name="name" class="form-control form-control-lg" v-model="currentuser.name">
+                                </div>
+                                <div class="form-group">
+                                    <input type="email" name="email" class="form-control form-control-lg" v-model="currentuser.email" >
+                                </div>
+                                <div class="form-group">
+                                    <input type="tel" name="phone" class="form-control form-control-lg" v-model="currentuser.phone">
+                                </div>
+                                <div class="form-group">
+                                    <button class="btn btn-info btn-block btn-lg" @click="showEditModel=false;updateUser();">Update User</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Delete User Model -->
+            <div id="overlay" v-if="showDeleteModel" >
+                <div class="modal-dialog"> 
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Delete User</h5>
+                            <button type="button" class="close" @click="showDeleteModel=false">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="model-body p-4">
+                            <h4 class="text-danger">Are you sure want to delete this user</h4>
+                            <h5>You are deleting {{currentuser.name}}</h5>
+                            <hr>
+                            <button class="btn btn-danger btn-lg" @click="showDeleteModel=false;deleteUser();hideDeleteUser();">Yes</button>
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                            <button class="btn btn-success btn-lg" @click="showDeleteModel=false">No</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+          </div>
+          <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.27.2/axios.min.js"></script>
+          <script src="https://cdn.jsdelivr.net/npm/vue@2.7.8/dist/vue.js"></script>
+          <script type="text/javascript" src="main.js"></script>
+    </body>
+</html>

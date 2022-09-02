@@ -1,0 +1,20 @@
+.title-font-size {
+  font-size: 25px;
+}
+#overlay {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #545b6273;
+}
+.imgProfile {
+  display: block;
+  float: left;
+  position: relative;
+  width: 65px;
+  height: 55px;
+  border-radius: 5px;
+  border: 1px solid #dae0e5;
+}
